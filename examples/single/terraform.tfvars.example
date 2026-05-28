@@ -1,0 +1,17 @@
+# Basic configuration
+prefix     = "faztest"
+region     = "us-west-2"
+username   = "admin"
+password   = "Change.Me.123"
+
+# Network configuration
+vpc_cidr   = "10.0.0.0/16"
+subnet_cidr = "10.0.1.0/24"
+availability_zone = "us-west-2a"
+
+# FortiAnalyzer configuration
+faz_license_type = "payg"  # or "byol"
+faz_version = "7.6.6"
+key_name    = "your-key-pair-name"
+admin_cidr  = ["0.0.0.0/0"]  # Restrict this in production
+# faz_byol_license_file = "path/to/license.lic"  # Only needed for BYOL

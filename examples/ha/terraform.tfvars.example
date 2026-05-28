@@ -1,0 +1,33 @@
+# Basic configuration
+prefix   = "faztest"
+region   = "eu-north-1"
+
+# Network configuration
+vpc = "172.16.136.0/23"
+subnets = [
+  { name = "subnet-faz1", cidr = "172.16.136.0/24", availability_zone = "eu-north-1a" },
+  { name = "subnet-faz2", cidr = "172.16.137.0/24", availability_zone = "eu-north-1b" }
+]
+
+# FortiAnalyzer configuration
+faz_license_type = "byol" # or "payg"
+faz_version      = "7.6.6"
+key_name         = "your-key-pair-name"
+admin_cidr       = ["0.0.0.0/0"] # Restrict this in production
+fortigate_cidr   = ["0.0.0.0/0"] # Restrict this in production
+
+# HA configuration
+ha_ip         = "public" # or "private"
+ha_group_id   = 1
+ha_group_name = "FAZHA"
+ha_password             = "your-ha-password"
+faz1_byol_serial_number = "your-license-serialnumber"
+faz2_byol_serial_number = "your-license-serialnumber"
+
+# FortiFlex license tokens
+#faz1_byol_fortiflex_license_token = "your fortiflex token"
+#faz2_byol_fortiflex_license_token = "your fortiflex token"
+
+# BYOL license
+# faz1_byol_license_file = "path/to/license1.lic"
+# faz2_byol_license_file = "path/to/license2.lic"
