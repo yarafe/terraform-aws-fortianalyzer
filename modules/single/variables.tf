@@ -163,7 +163,7 @@ variable "faz_admin_port" {
 variable "create_iam_role" {
   description = "Create IAM role for FortiAnalyzer"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "private_ip" {

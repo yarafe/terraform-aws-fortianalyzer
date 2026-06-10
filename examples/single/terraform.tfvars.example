@@ -15,6 +15,7 @@ faz_license_type = "payg"  # or "byol"
 faz_version = "7.6.6"
 key_name    = "your-key-pair-name"
 admin_cidr  = ["0.0.0.0/0"]  # Restrict this in production
+create_iam_role = true
 # faz_byol_license_file = "path/to/license.lic"  # Only needed for BYOL
 
 

@@ -11,6 +11,12 @@ variable "prefix" {
   type        = string
 }
 
+variable "create_iam_role" {
+  description = "Create IAM role for FortiAnalyzer"
+  type        = bool
+  default     = true
+}
+
 variable "region" {
   description = "AWS region for deployment"
   type        = string
