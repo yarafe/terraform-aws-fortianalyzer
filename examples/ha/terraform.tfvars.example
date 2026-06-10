@@ -10,6 +10,7 @@ subnets = [
 ]
 
 # FortiAnalyzer configuration
+faz_vmsize       = "m5.xlarge"
 faz_license_type = "byol" # or "payg"
 faz_version      = "7.6.6"
 key_name         = "your-key-pair-name"

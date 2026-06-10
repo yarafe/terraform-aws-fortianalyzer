@@ -72,6 +72,12 @@ variable "subnets" {
 # FortiAnalyzer Specific Configuration
 ##############################################################################################################
 
+variable "faz_vmsize" {
+  description = "EC2 instance type for FortiAnalyzer"
+  type        = string
+  default     = "m5.xlarge"
+}
+
 variable "faz_version" {
   description = "FortiAnalyzer version"
   type        = string

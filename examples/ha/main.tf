@@ -70,6 +70,7 @@ module "fortianalyzer" {
   subnet_availability_zones         = [aws_subnet.subnets[var.subnets[0].name].availability_zone, aws_subnet.subnets[var.subnets[1].name].availability_zone]
   key_name                          = var.key_name
   faz_version                       = var.faz_version
+  faz_vmsize                        = var.faz_vmsize
   faz_license_type                  = var.faz_license_type
   admin_cidr                        = var.admin_cidr
   fortigate_cidr                    = var.fortigate_cidr
