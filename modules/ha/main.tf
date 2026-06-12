@@ -18,9 +18,11 @@ locals {
     ha_priority           = 100
     ha_preferred_role     = "primary"
     ha_password           = var.ha_password
+    ha_ipaddr             = var.ha_mode == "a-a" ? "" : (var.ha_mode == "a-p" && var.ha_ip == "public" ? aws_eip.vip[0].public_ip : cidrhost(data.aws_subnet.faz1.cidr_block, 100))
     ha_group_id           = var.ha_group_id
     ha_group_name         = var.ha_group_name
     initial_sync          = "enable"
+    ha_mode               = var.ha_mode
   }
 
   faz2_name = "${var.prefix}-faz2"
@@ -34,9 +36,11 @@ locals {
     ha_priority           = 1
     ha_preferred_role     = "standby"
     ha_password           = var.ha_password
+    ha_ipaddr             = var.ha_mode == "a-a" ? "" : (var.ha_mode == "a-p" && var.ha_ip == "public" ? aws_eip.vip[0].public_ip : cidrhost(data.aws_subnet.faz1.cidr_block, 100))
     ha_group_id           = var.ha_group_id
     ha_group_name         = var.ha_group_name
     initial_sync          = "disable"
+    ha_mode               = var.ha_mode
   }
 
   # AMI ID selection based on license type
@@ -149,7 +153,7 @@ resource "aws_security_group" "fortianalyzer" {
 # Elastic IPs
 ##############################################################################################################
 resource "aws_eip" "faz1" {
-  count = var.ha_ip == "public" ? 1 : 0
+  count = (var.ha_mode == "a-a" || (var.ha_mode == "a-p" && var.ha_ip == "public")) ? 1 : 0
 
   domain            = "vpc"
   network_interface = aws_network_interface.faz1.id
@@ -162,7 +166,7 @@ resource "aws_eip" "faz1" {
 }
 
 resource "aws_eip" "faz2" {
-  count = var.ha_ip == "public" ? 1 : 0
+  count = (var.ha_mode == "a-a" || (var.ha_mode == "a-p" && var.ha_ip == "public")) ? 1 : 0
 
   domain            = "vpc"
   network_interface = aws_network_interface.faz2.id
@@ -175,9 +179,9 @@ resource "aws_eip" "faz2" {
 }
 
 resource "aws_eip" "vip" {
-  count = var.ha_ip == "public" ? 1 : 0
+  count = (var.ha_ip == "public" && var.ha_mode == "a-p") ? 1 : 0
 
-  domain            = "vpc"
+  domain = "vpc"
 
   tags = merge(var.fortinet_tags, {
     Name = "${var.prefix}-eip"
@@ -191,7 +195,12 @@ resource "aws_eip" "vip" {
 resource "aws_network_interface" "faz1" {
   subnet_id       = var.subnet_ids[0]
   security_groups = [aws_security_group.fortianalyzer.id]
-
+  private_ip_list_enabled = true
+    private_ip_list = (
+    var.ha_mode == "a-a" ? [] :
+    (var.ha_mode == "a-p" && var.ha_ip == "private") ? [cidrhost(data.aws_subnet.faz1.cidr_block, 50), local.faz1_vars.ha_ipaddr] :
+    []
+  )
   tags = merge(var.fortinet_tags, {
     Name = "${local.faz1_name}-nic1"
   })
@@ -277,7 +286,7 @@ resource "aws_instance" "faz1" {
 
 # Network interface for FortiAnalyzer 2
 resource "aws_network_interface" "faz2" {
-  subnet_id       = var.subnet_ids[1]
+  subnet_id       = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_ids[0] : var.subnet_ids[1]
   security_groups = [aws_security_group.fortianalyzer.id]
 
   tags = merge(var.fortinet_tags, {
@@ -289,7 +298,7 @@ resource "aws_network_interface" "faz2" {
 resource "aws_ebs_volume" "faz2_logs" {
   count = var.enable_log_volume ? 1 : 0
 
-  availability_zone = var.subnet_availability_zones[1]
+ availability_zone  = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_availability_zones[0] : var.subnet_availability_zones[1]
   size              = var.faz_log_volume_size
   type              = var.faz_log_volume_type
   encrypted         = true
@@ -314,7 +323,7 @@ resource "aws_instance" "faz2" {
   instance_type = var.faz_vmsize
   key_name      = var.key_name
 
-  availability_zone = var.subnet_availability_zones[1]
+  availability_zone = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_availability_zones[0] : var.subnet_availability_zones[1]
 
   # Network configuration
   primary_network_interface {

@@ -18,12 +18,24 @@ variable "region" {
 }
 
 variable "ha_ip" {
-  description = "ha_ip: either 'public' or 'private'"
+  description = "ha_ip: either 'public' or 'private'. Required only when ha_mode is 'a-p'."
   type        = string
+  default     = "public"
 
   validation {
-    condition     = var.ha_ip == "public" || var.ha_ip == "private"
+    condition     = var.ha_ip == null || var.ha_ip == "public" || var.ha_ip == "private"
     error_message = "The ha_ip variable must be either 'public' or 'private'."
+  }
+}
+
+variable "ha_mode" {
+  description = "ha_mode: either 'a-a' or 'a-p'"
+  type        = string
+  default     = "a-p"
+
+  validation {
+    condition     = var.ha_mode == "a-a" || var.ha_mode == "a-p"
+    error_message = "The ha_ip variable must be either 'a-a' or 'a-p'."
   }
 }
 
@@ -38,19 +50,25 @@ variable "vpc_id" {
 
 variable "subnet_ids" {
   type        = list(string)
-  description = "IDs of two existing subnets to be connected to FortiAnalyzer VMs"
+  description = "IDs of subnets to be connected to FortiAnalyzer VMs. Provide 1 subnet for a-p with private HA, 2 subnets for all other cases."
   validation {
-    condition     = length(var.subnet_ids) == 2
-    error_message = "Please provide exactly 2 subnet IDs (faz1, faz2)."
+    condition = (
+      (var.ha_mode == "a-p" && var.ha_ip == "private" && length(var.subnet_ids) == 1) ||
+      (!(var.ha_mode == "a-p" && var.ha_ip == "private") && length(var.subnet_ids) == 2)
+    )
+    error_message = "a-p with private HA requires 1 subnet ID; all other cases require exactly 2 subnet IDs."
   }
 }
 
 variable "subnet_availability_zones" {
   type        = list(string)
-  description = "Availability zones of two existing subnets to be connected to FortiAnalyzer VMs"
+  description = "Availability zones of subnets to be connected to FortiAnalyzer VMs. Provide 1 AZ for a-p with private HA, 2 AZs for all other cases."
   validation {
-    condition     = length(var.subnet_availability_zones) == 2
-    error_message = "Please provide exactly 2 subnet availability zones (faz1, faz2)."
+    condition = (
+      (var.ha_mode == "a-p" && var.ha_ip == "private" && length(var.subnet_availability_zones) == 1) ||
+      (!(var.ha_mode == "a-p" && var.ha_ip == "private") && length(var.subnet_availability_zones) == 2)
+    )
+    error_message = "a-p with private HA requires 1 AZ; all other cases require exactly 2 AZs."
   }
 }
 

@@ -67,3 +67,8 @@ data "aws_ami" "fortianalyzer_payg" {
 data "aws_vpc" "selected" {
    id    = var.vpc_id
 }
+
+# Get faz1 subnet information
+data "aws_subnet" "faz1" {
+  id = var.subnet_ids[0]
+}
