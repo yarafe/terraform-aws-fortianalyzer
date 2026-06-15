@@ -66,10 +66,10 @@ module "fortianalyzer" {
   prefix                            = var.prefix
   region                            = var.region
   vpc_id                            = aws_vpc.vpc.id
-  subnet_ids                        = [aws_subnet.subnets[var.subnets[0].name].id, aws_subnet.subnets[var.subnets[1].name].id]
-  subnet_availability_zones         = [aws_subnet.subnets[var.subnets[0].name].availability_zone, aws_subnet.subnets[var.subnets[1].name].availability_zone]
-  key_name                          = var.key_name
+  subnet_ids                        = (var.ha_mode == "a-p" && var.ha_ip == "private") ? [aws_subnet.subnets[var.subnets[0].name].id] : [aws_subnet.subnets[var.subnets[0].name].id, aws_subnet.subnets[var.subnets[1].name].id]
+  subnet_availability_zones         = (var.ha_mode == "a-p" && var.ha_ip == "private") ? [aws_subnet.subnets[var.subnets[0].name].availability_zone] : [aws_subnet.subnets[var.subnets[0].name].availability_zone, aws_subnet.subnets[var.subnets[1].name].availability_zone]
   faz_version                       = var.faz_version
+  faz_vmsize                        = var.faz_vmsize
   faz_license_type                  = var.faz_license_type
   admin_cidr                        = var.admin_cidr
   fortigate_cidr                    = var.fortigate_cidr
@@ -80,6 +80,7 @@ module "fortianalyzer" {
   faz1_byol_serial_number           = var.faz1_byol_serial_number
   faz2_byol_serial_number           = var.faz2_byol_serial_number
   ha_ip                             = var.ha_ip
+  ha_mode                           = var.ha_mode
   ha_password                       = var.ha_password
   ha_group_id                       = var.ha_group_id
   ha_group_name                     = var.ha_group_name

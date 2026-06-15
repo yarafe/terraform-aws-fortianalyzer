@@ -84,7 +84,9 @@ module "fortianalyzer" {
   password              = var.password
   key_name              = var.key_name
   faz_version           = var.faz_version
+  faz_vmsize            = var.faz_vmsize
   faz_license_type      = var.faz_license_type
   admin_cidr            = var.admin_cidr
   faz_byol_license_file = var.faz_byol_license_file
+  create_iam_role       = var.create_iam_role
 }

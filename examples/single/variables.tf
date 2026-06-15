@@ -11,6 +11,12 @@ variable "prefix" {
   type        = string
 }
 
+variable "create_iam_role" {
+  description = "Create IAM role for FortiAnalyzer"
+  type        = bool
+  default     = true
+}
+
 variable "region" {
   description = "AWS region for deployment"
   type        = string
@@ -49,6 +55,12 @@ variable "availability_zone" {
 }
 
 # FortiAnalyzer configuration
+variable "faz_vmsize" {
+  description = "EC2 instance type for FortiAnalyzer"
+  type        = string
+  default     = "m5.large"
+}
+
 variable "faz_license_type" {
   description = "License type (byol or payg)"
   type        = string

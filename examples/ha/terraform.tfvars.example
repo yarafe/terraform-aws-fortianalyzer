@@ -3,6 +3,7 @@ prefix   = "faztest"
 region   = "eu-north-1"
 
 # Network configuration
+# Active-Passive with private VIP setup requires only one subnet. Aactive-Active and Active-Passive with public VIP requires two subnets.
 vpc = "172.16.136.0/23"
 subnets = [
   { name = "subnet-faz1", cidr = "172.16.136.0/24", availability_zone = "eu-north-1a" },
@@ -10,6 +11,7 @@ subnets = [
 ]
 
 # FortiAnalyzer configuration
+faz_vmsize       = "m5.xlarge"
 faz_license_type = "byol" # or "payg"
 faz_version      = "7.6.6"
 key_name         = "your-key-pair-name"
@@ -17,7 +19,8 @@ admin_cidr       = ["0.0.0.0/0"] # Restrict this in production
 fortigate_cidr   = ["0.0.0.0/0"] # Restrict this in production
 
 # HA configuration
-ha_ip         = "public" # or "private"
+ha_mode       = "a-p" # "a-a" or "a-p"
+ha_ip         = "public" # "public" or "private" when ha_mode = "a-p" , null when ha_mode = "a-a"
 ha_group_id   = 1
 ha_group_name = "FAZHA"
 ha_password             = "your-ha-password"

@@ -18,12 +18,23 @@ variable "region" {
 }
 
 variable "ha_ip" {
-  description = "ha_ip: either 'public' or 'private'"
+  description = "ha_ip: either 'public' or 'private'. Required only when ha_mode is 'a-p'."
+  type        = string
+  default     = "public"
+
+  validation {
+    condition     = var.ha_ip == null || var.ha_ip == "public" || var.ha_ip == "private"
+    error_message = "The ha_ip variable must be either 'public' or 'private'."
+  }
+}
+
+variable "ha_mode" {
+  description = "ha_mode: either 'a-a' or 'a-p'"
   type        = string
 
   validation {
-    condition     = var.ha_ip == "public" || var.ha_ip == "private"
-    error_message = "The ha_ip variable must be either 'public' or 'private'."
+    condition     = var.ha_mode == "a-a" || var.ha_mode == "a-p"
+    error_message = "The ha_ip variable must be either 'a-a' or 'a-p'."
   }
 }
 
@@ -64,13 +75,19 @@ variable "subnets" {
 
   default = [
     { name = "subnet-faz1", cidr = "172.16.136.0/26", availability_zone = "eu-north-1a" },  # FortiAnalyzer 1
-    { name = "subnet-faz2", cidr = "172.16.136.64/26", availability_zone = "eu-north-1b" }, # FortiAnalyzer 2
+    { name = "subnet-faz2", cidr = "172.16.136.64/26", availability_zone = "eu-north-1b" }  # FortiAnalyzer 2
   ]
 }
 
 ##############################################################################################################
 # FortiAnalyzer Specific Configuration
 ##############################################################################################################
+
+variable "faz_vmsize" {
+  description = "EC2 instance type for FortiAnalyzer"
+  type        = string
+  default     = "m5.xlarge"
+}
 
 variable "faz_version" {
   description = "FortiAnalyzer version"

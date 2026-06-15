@@ -18,10 +18,11 @@ config system admin setting
     set show-hostname enable
 end
 config system ha
-    set mode a-a
+    set mode ${ha_mode}
     set group-id ${ha_group_id}
     set group-name ${ha_group_name}
     set hb-interface port1
+    set initial-sync ${initial_sync}
     set hb-interval 5
     set hb-lost-threshold 10
     set password ${ha_password}
@@ -33,6 +34,12 @@ config system ha
             set serial-number ${peer_serial_number}
         next
     end
+    config vip
+        edit 1
+            set vip ${ha_ipaddr}
+            set vip-interface port1
+        next
+  end
 end
 config system certificate ca
     edit Amazon-RSA-2048-M01
