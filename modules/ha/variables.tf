@@ -193,7 +193,7 @@ variable "faz_root_volume_size" {
 variable "faz_log_volume_size" {
   description = "Size of the log volume in GB"
   type        = number
-  default     = 100
+  default     = 500
 }
 
 variable "faz_log_volume_type" {
@@ -221,7 +221,7 @@ variable "faz_admin_port" {
 variable "create_iam_role" {
   description = "Create IAM role for FortiAnalyzer"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "enable_detailed_monitoring" {
