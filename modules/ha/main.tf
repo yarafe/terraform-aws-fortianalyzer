@@ -34,7 +34,7 @@ locals {
     peer_ipaddr           = aws_network_interface.faz1.private_ip
     peer_serial_number    = var.faz1_byol_serial_number
     ha_priority           = 1
-    ha_preferred_role     = "standby"
+    ha_preferred_role     = "secondary"
     ha_password           = var.ha_password
     ha_ipaddr             = var.ha_mode == "a-a" ? "" : (var.ha_mode == "a-p" && var.ha_ip == "public" ? aws_eip.vip[0].public_ip : cidrhost(data.aws_subnet.faz1.cidr_block, 100))
     ha_group_id           = var.ha_group_id
