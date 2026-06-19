@@ -15,7 +15,8 @@ The module supports three topologies, selected by `ha_mode` (`a-p` or `a-a`) and
 1. **Active-Passive with Public VIP** 
 
 FortiAnalyzer A and FortiAnalyzer B land in different subnets / AZs — cross-AZ resilience. Each node gets its own management EIP, plus a public VIP that fronts the cluster.
-On failover, FortiAnalyzer uses its instance IAM role to reassociate the public VIP to the new primary node.
+Once the HA cluster is successfully formed, FazUtil creates a secondary private IP address on eni1 interface of both FortiAnalyzers instances and assigns the public VIP to the primary FortiAnalyzer. During a failover , the public VIP is automatically reassigned to the new primary FortiAnalyzer, ensuring continuous management access.
+FortiAnalyzer uses its instance IAM role to reassociate the public VIP to the new primary node.
 Only the HA primary can receive logs and archive files from its directly connected device and forward them to HA secondary.
 
 ![FortiAnalyzer Active-Passive Public VIP design](images/faz-a-p-public-vip.png)
@@ -258,7 +259,7 @@ end
 - For BYOL: valid FortiAnalyzer license files or FortiFlex tokens, plus the appliance serial numbers
 - [FortiAnalyzer supported instances](https://docs.fortinet.com/document/fortianalyzer-public-cloud/8.0.0/aws-administration-guide/369910/instance-type-support)
 - [FortiAnalyzer requires a minimum disk size of 500 GB](https://docs.fortinet.com/document/fortianalyzer-public-cloud/8.0.0/aws-administration-guide/571011/deploying-fortianalyzer-vm-using-manual-launch )
-- During deployment the aws certificate (Amazon-RSA-2048-M01) added for both FortiAnalyzers. This certificate can also be downloaded from this [link](https://www.amazontrust.com/repository/)
+- During deployment the aws certificate "AmazonRootCA1" added for both FortiAnalyzers. This certificate can also be downloaded from this [link](https://www.amazontrust.com/repository/)
 
 ### Features
 
@@ -439,6 +440,12 @@ diagnose sniffer packet <ha-interface> 'host <peer-ip>' 4
 
 ```
 diagnose debug application ha 255
+```
+
+- Force a manual HA failover in a FortiAnalyzer HA cluster, making the current secondary unit take over as primary.
+
+```
+ diag ha failover
 ```
 
 Force a configuration re-sync if logs synced but configuration did not:

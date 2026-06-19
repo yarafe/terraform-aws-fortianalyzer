@@ -57,13 +57,6 @@ locals {
   # Security group rules
   management_ingress_rules = [
     {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "22"
-      cidr_blocks = ["0.0.0.0/0"]
-      description = "FAZ HA"
-    },
-    {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
