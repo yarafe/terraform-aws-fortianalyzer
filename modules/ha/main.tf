@@ -92,12 +92,12 @@ locals {
       description = "FAZ HA"
     },
     {
-    description = "All traffic from VPC"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.selected.cidr_block]
-  }
+      description = "All traffic from VPC"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = [data.aws_vpc.selected.cidr_block]
+    }
   ]
 
   faz1_tags = merge(var.fortinet_tags, {
@@ -186,12 +186,12 @@ resource "aws_eip" "vip" {
 ##############################################################################################################
 # Network interface for FortiAnalyzer 1
 resource "aws_network_interface" "faz1" {
-  subnet_id       = var.subnet_ids[0]
-  security_groups = [aws_security_group.fortianalyzer.id]
+  subnet_id               = var.subnet_ids[0]
+  security_groups         = [aws_security_group.fortianalyzer.id]
   private_ip_list_enabled = true
-    private_ip_list = (
+  private_ip_list = (
     var.ha_mode == "a-a" ? [] :
-    (var.ha_mode == "a-p" && var.ha_ip == "private") ? [cidrhost(data.aws_subnet.faz1.cidr_block, 50), local.faz1_vars.ha_ipaddr] :
+    (var.ha_mode == "a-p" && var.ha_ip == "private") ? [(var.faz1_private_ip != "" ? var.faz1_private_ip : cidrhost(data.aws_subnet.faz1.cidr_block, 50)), local.faz1_vars.ha_ipaddr] :
     []
   )
   tags = merge(var.fortinet_tags, {
@@ -281,6 +281,12 @@ resource "aws_instance" "faz1" {
 resource "aws_network_interface" "faz2" {
   subnet_id       = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_ids[0] : var.subnet_ids[1]
   security_groups = [aws_security_group.fortianalyzer.id]
+  private_ip_list_enabled = true
+  private_ip_list = (
+    var.ha_mode == "a-a" ? [] :
+    (var.ha_mode == "a-p" && var.ha_ip == "private") ? [(var.faz2_private_ip != "" ? var.faz2_private_ip : cidrhost(data.aws_subnet.faz1.cidr_block, 50))] :
+    []
+  )
 
   tags = merge(var.fortinet_tags, {
     Name = "${local.faz2_name}-nic1"
@@ -291,7 +297,7 @@ resource "aws_network_interface" "faz2" {
 resource "aws_ebs_volume" "faz2_logs" {
   count = var.enable_log_volume ? 1 : 0
 
- availability_zone  = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_availability_zones[0] : var.subnet_availability_zones[1]
+  availability_zone = (var.ha_mode == "a-p" && var.ha_ip == "private") ? var.subnet_availability_zones[0] : var.subnet_availability_zones[1]
   size              = var.faz_log_volume_size
   type              = var.faz_log_volume_type
   encrypted         = true

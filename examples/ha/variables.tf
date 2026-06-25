@@ -186,6 +186,25 @@ variable "create_iam_role" {
   default     = true
 }
 
+# Reserved private IPs (optional)
+variable "faz1_private_ip" {
+  description = "Reserved private IP for FortiAnalyzer 1. Leave empty for dynamic assignment."
+  type        = string
+  default     = ""
+}
+
+variable "faz2_private_ip" {
+  description = "Reserved private IP for FortiAnalyzer 2. Leave empty for dynamic assignment."
+  type        = string
+  default     = ""
+}
+
+variable "faz_ha_private_ip" {
+  description = "Reserved private IP for the HA floating VIP (private HA mode only). Leave empty to auto-assign .100 host in the subnet."
+  type        = string
+  default     = ""
+}
+
 # Tags
 variable "fortinet_tags" {
   description = "Fortinet specific tags"

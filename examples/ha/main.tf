@@ -85,4 +85,7 @@ module "fortianalyzer" {
   ha_group_id                       = var.ha_group_id
   ha_group_name                     = var.ha_group_name
   create_iam_role                   = var.create_iam_role
+  faz1_private_ip                   = var.faz1_private_ip
+  faz2_private_ip                   = var.faz2_private_ip
+  faz_ha_private_ip                 = var.faz_ha_private_ip
 }

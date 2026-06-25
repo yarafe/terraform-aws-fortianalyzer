@@ -236,6 +236,28 @@ variable "enable_termination_protection" {
   default     = false
 }
 
+##############################################################################################################
+# Static Private IP Configuration (optional)
+##############################################################################################################
+
+variable "faz1_private_ip" {
+  description = "Static private IP for FortiAnalyzer 1 management interface. Leave empty for dynamic assignment."
+  type        = string
+  default     = ""
+}
+
+variable "faz2_private_ip" {
+  description = "Static private IP for FortiAnalyzer 2 management interface. Leave empty for dynamic assignment."
+  type        = string
+  default     = ""
+}
+
+variable "faz_ha_private_ip" {
+  description = "Static private IP for the HA floating VIP (private HA mode only). Leave empty to auto-assign .100 host in the subnet."
+  type        = string
+  default     = ""
+}
+
 variable "fortinet_tags" {
   description = "Fortinet specific tags"
   type        = map(string)
